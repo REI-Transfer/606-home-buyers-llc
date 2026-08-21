@@ -1,0 +1,260 @@
+[
+  {
+    "name": "COMPANY_NAME",
+    "type": "string",
+    "required": true,
+    "scope": "server",
+    "description": "Client's trading name. Appears in page title and hero section."
+  },
+  {
+    "name": "PHONE_DISPLAY",
+    "type": "string",
+    "required": true,
+    "scope": "server",
+    "description": "Phone number formatted for display (e.g. '(800) 000-0000')."
+  },
+  {
+    "name": "PHONE_HREF",
+    "type": "string",
+    "required": true,
+    "scope": "server",
+    "description": "Phone number for tel: href. Digits only, no spaces (e.g. '8000000000')."
+  },
+  {
+    "name": "ACCENT_COLOR",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "#e41c25",
+    "description": "Brand hex color. Used as --primary and --accent CSS variables. Defaults to REI Transfer red."
+  },
+  {
+    "name": "LOGO_URL",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Absolute URL to client logo image (Vercel Blob CDN URL)."
+  },
+  {
+    "name": "HEADLINE",
+    "type": "string",
+    "required": true,
+    "scope": "server",
+    "description": "Hero section headline text."
+  },
+  {
+    "name": "SUBHEADLINE",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Hero section subheadline text."
+  },
+  {
+    "name": "STAT_1_VALUE",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "First trust stat value (e.g. '1,000+')."
+  },
+  {
+    "name": "STAT_1_LABEL",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "First trust stat label (e.g. 'Homes Purchased')."
+  },
+  {
+    "name": "STAT_2_VALUE",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Second trust stat value."
+  },
+  {
+    "name": "STAT_2_LABEL",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Second trust stat label."
+  },
+  {
+    "name": "STAT_3_VALUE",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Third trust stat value."
+  },
+  {
+    "name": "STAT_3_LABEL",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Third trust stat label."
+  },
+  {
+    "name": "META_TITLE",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "SEO <title> tag content."
+  },
+  {
+    "name": "META_DESCRIPTION",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "SEO meta description content."
+  },
+  {
+    "name": "PRIVACY_POLICY_URL",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "/privacy",
+    "description": "URL for privacy policy page. Defaults to /privacy (built into template)."
+  },
+  {
+    "name": "TERMS_URL",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "/terms",
+    "description": "URL for terms of service page. Defaults to /terms (built into template)."
+  },
+  {
+    "name": "DISQUALIFIED_PROPERTY_TYPES",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "mobile-home,land,other",
+    "description": "Comma-separated list of property type IDs that trigger an immediate disqualification screen. Valid IDs: single-family, multi-family, condo-townhouse, mobile-home, land, other. Defaults to mobile-home,land,other."
+  },
+  {
+    "name": "ALLOWED_STATES",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Comma-separated 2-letter US state codes to ALLOW (e.g. 'CA' or 'CA,NV'). When set, any address whose state is not in the list is blocked at step 1 as out-of-area and no lead fires. Empty (default) = no geo gate."
+  },
+  {
+    "name": "DISQUALIFIED_OWNERSHIP_LENGTHS",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Comma-separated ownership-length option IDs that trigger an immediate disqualification screen on the v1 homepage form. Valid IDs: less-than-3, 3-to-5, 5-to-10, 10-plus. Empty (default) = no ownership gate. Example: 'less-than-3,3-to-5' blocks under-5-year owners."
+  },
+  {
+    "name": "WEBHOOK_URL",
+    "type": "string",
+    "required": true,
+    "scope": "server",
+    "description": "n8n lead handler webhook. Format: https://n8n.srv1197128.hstgr.cloud/webhook/lead-{slug}."
+  },
+  {
+    "name": "NEXT_PUBLIC_GOOGLE_PLACES_API_KEY",
+    "type": "string",
+    "required": true,
+    "scope": "public",
+    "description": "Google Places API key for address autocomplete. Shared across all clients (restrict via GCP Console). In the deploy webapp, this reads from NEXT_PUBLIC_GOOGLE_MAPS_API_KEY."
+  },
+  {
+    "name": "NEXT_PUBLIC_FB_PIXEL_ID",
+    "type": "string",
+    "required": false,
+    "scope": "public",
+    "default": "",
+    "description": "Meta (Facebook) Pixel ID. Leave empty if client has no pixel yet; set post-deploy."
+  },
+  {
+    "name": "NEXT_PUBLIC_VIDALYTICS_ACCOUNT_ID",
+    "type": "string",
+    "required": false,
+    "scope": "public",
+    "default": "",
+    "description": "Vidalytics account ID for video embed. Optional -- set post-deploy if client uses video."
+  },
+  {
+    "name": "NEXT_PUBLIC_VIDALYTICS_EMBED_ID",
+    "type": "string",
+    "required": false,
+    "scope": "public",
+    "default": "",
+    "description": "Vidalytics embed ID. Optional -- set post-deploy if client uses video."
+  },
+  {
+    "name": "SERVICE_AREAS",
+    "type": "json",
+    "required": false,
+    "scope": "server",
+    "default": "[]",
+    "description": "JSON array of service area circles: [{id, centerLat, centerLng, radiusMiles}]. Passed to address autocomplete for location bias."
+  },
+  {
+    "name": "NEXT_PUBLIC_SERVICE_AREAS",
+    "type": "json",
+    "required": false,
+    "scope": "public",
+    "default": "[]",
+    "description": "Client-side copy of SERVICE_AREAS for address autocomplete location bias and validation. JSON array of circles: [{centerLat, centerLng, radiusMiles}]."
+  },
+  {
+    "name": "V3_ENABLED",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "true",
+    "description": "Enables the /v3 zero-distraction form route; \"true\" makes /v3 live, anything else 404s."
+  },
+  {
+    "name": "IBUYKC_STYLE",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "true",
+    "description": "Enables the iBuyKC landing style: white page background, accent color only on buttons, dark readable text, enlarged logo, and a flexible owner/team photo (un-cropped, natural aspect). \"true\" turns it on; anything else or unset renders the legacy style. New clients default to \"true\" via this schema; existing rei-survey-template@main projects without this env stay byte-identical on the legacy style."
+  },
+  {
+    "name": "MOTIVATION_V2",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "true",
+    "description": "Enables William's v2 motivation/reason-for-selling list on BOTH the homepage (v1) and /v3 forms: 8 valid reasons (Facing foreclosure, Behind on payments, Inherited property, Divorce or separation, Can't afford repairs, Vacant property I need to sell, Urgent financial situation not listed above, Personal situation not listed above) plus a 9th hard-disqualifier (\"No reason / seeing what my house is worth\") that shows the block screen and never submits the lead. \"true\" turns it on; anything else or unset renders the legacy reason list with no disqualifier. New clients default to \"true\" via this schema; existing rei-survey-template@main projects without this env stay byte-identical on the legacy reason list."
+  },
+  {
+    "name": "NEXT_PUBLIC_GOFUNNEL_ORG_ID",
+    "type": "string",
+    "required": false,
+    "scope": "client",
+    "default": "",
+    "description": "GoFunnel attribution tracking org (client) id. Per-client. Loads the GoFunnel tracking script (sets gf_sid session cookie) when set; blank/unset disables tracking, so deployments without it stay byte-identical."
+  },
+  {
+    "name": "GOFUNNEL_WEBHOOK_CREDENTIAL_ID",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "GoFunnel external / custom-webhook credential id. Per-client. When set together with GOFUNNEL_WEBHOOK_SECRET, /api/submit forwards each completed lead to GoFunnel (type=survey_submitted) alongside the n8n webhook. Blank/unset disables the forward."
+  },
+  {
+    "name": "GOFUNNEL_WEBHOOK_SECRET",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "default": "",
+    "description": "Bearer secret for the GoFunnel external webhook (pairs with GOFUNNEL_WEBHOOK_CREDENTIAL_ID). Blank/unset disables the forward."
+  }
+]
