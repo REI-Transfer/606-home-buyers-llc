@@ -53,11 +53,11 @@ const TIMELINE_OPTIONS = [
 ]
 
 const CONDITION_OPTIONS = [
-  { id: "excellent", label: "Excellent - Move-in ready" },
-  { id: "good", label: "Good - Minor repairs needed" },
-  { id: "fair", label: "Fair - Needs some work" },
-  { id: "poor", label: "Poor - Major repairs needed" },
-  { id: "distressed", label: "Distressed - Significant issues" },
+  { id: "excellent", label: "Excellent - Move-in ready", desc: "Recently updated. Could list tomorrow with nothing to fix." },
+  { id: "good", label: "Good - Minor repairs needed", desc: "Well kept, but dated kitchen, baths, or floors. Nothing broken." },
+  { id: "fair", label: "Fair - Needs some work", desc: "Dated throughout, plus wear and repairs I've been putting off." },
+  { id: "poor", label: "Poor - Major repairs needed", desc: "Major systems need work. Roof, HVAC, plumbing, electrical, or foundation." },
+  { id: "distressed", label: "Distressed - Significant issues", desc: "Not livable as-is. Significant damage, or it's been sitting vacant." },
 ]
 
 const REASON_OPTIONS = [
@@ -434,7 +434,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
   }
 
   const renderOptionButton = (
-    option: { id: string; label: string },
+    option: { id: string; label: string; desc?: string },
     selectedValue: string,
     field: keyof SurveyData
   ) => (
@@ -447,7 +447,14 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
           : "border-gray-200 bg-white text-gray-700 hover:border-[var(--accent)]/50 hover:bg-gray-50"
       }`}
     >
-      {option.label}
+      {option.desc ? (
+        <>
+          <span className="block">{option.label}</span>
+          <span className="mt-0.5 block text-xs font-normal text-gray-500">{option.desc}</span>
+        </>
+      ) : (
+        option.label
+      )}
     </button>
   )
 
