@@ -59,6 +59,7 @@ type Props = {
   disqualifiedPropertyTypes: string[]
   // 2-letter US state codes to ALLOW (ALLOWED_STATES). Empty → no state gate.
   allowedStates?: string[]
+  allowedCounties?: string[]
   phoneHref?: string
   phoneDisplay?: string
   // When true (MOTIVATION_V2), render William's v2 reason list incl. the
@@ -252,7 +253,7 @@ function StepHeader({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPropertyTypes, allowedStates = [], motivationV2 = false }: Props) {
+export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPropertyTypes, allowedStates = [], allowedCounties = [], motivationV2 = false }: Props) {
   const [step, setStep] = useState(1)
   const TOTAL_STEPS = 9
   const [outsideAreaError, setOutsideAreaError] = useState(false)
@@ -586,7 +587,7 @@ export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPro
               }}
               onOutOfArea={() => setOutsideAreaError(true)}
               serviceAreas={serviceAreas}
-              allowedStates={allowedStates}
+              allowedStates={allowedStates} allowedCounties={allowedCounties}
               placeholder="Start typing your address..."
             />
             {outsideAreaError && (

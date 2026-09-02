@@ -29,6 +29,7 @@ interface AddressAutocompleteProps {
   // 2-letter US state codes to ALLOW. Empty → no state gate. Out-of-list
   // states are routed through onOutOfArea (same block path as out-of-service-area).
   allowedStates?: string[]
+  allowedCounties?: string[]
   placeholder?: string
 }
 
@@ -93,6 +94,7 @@ export function AddressAutocomplete({
   onOutOfArea,
   serviceAreas = [],
   allowedStates = [],
+  allowedCounties = [],
   placeholder = "Start typing your address...",
 }: AddressAutocompleteProps) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -174,6 +176,20 @@ export function AddressAutocomplete({
         onChange(place.formatted_address)
         onOutOfArea?.(place.formatted_address)
         return
+      }
+
+      // County allow-list gate (env ALLOWED_COUNTIES), TX-SCOPED: county names repeat across
+      // states (Montgomery, Harris, ...), so require state === "TX" AND county in the list.
+      // Google Places gives the county as long_name (e.g. "Harris County"); normalize by
+      // stripping a trailing " County". Empty list -> no county gate.
+      if (allowedCounties.length > 0) {
+        const normCounty = (c: string) => (c || "").replace(/\s+county$/i, "").trim().toLowerCase()
+        const inList = allowedCounties.map(normCounty).includes(normCounty(county))
+        if (!(state && state.toUpperCase() === "TX" && county && inList)) {
+          onChange(place.formatted_address)
+          onOutOfArea?.(place.formatted_address)
+          return
+        }
       }
 
       // Service area validation
