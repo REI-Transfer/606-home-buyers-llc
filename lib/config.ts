@@ -60,6 +60,7 @@ const config = {
   // gate → byte-identical legacy behavior for all existing rei-survey-template
   // @main projects that never set ALLOWED_STATES.
   allowedStates:   process.env.ALLOWED_STATES ?? "",
+  allowedCounties: process.env.ALLOWED_COUNTIES ?? "",
 
   // Webhook (server-side only — never exposed to browser)
   webhookUrl:      process.env.WEBHOOK_URL ?? "",

@@ -19,6 +19,7 @@ export default function HomePage() {
   const disqualifiedPropertyTypes = config.disqualifiedPropertyTypes.split(",").map(s => s.trim()).filter(Boolean)
   const disqualifiedOwnershipLengths = config.disqualifiedOwnershipLengths.split(",").map(s => s.trim()).filter(Boolean)
   const allowedStates = config.allowedStates.split(",").map(s => s.trim()).filter(Boolean)
+  const allowedCounties = config.allowedCounties.split(",").map(s => s.trim()).filter(Boolean)
 
   const ibuykc = config.useIbuykcStyle
 
@@ -80,7 +81,7 @@ export default function HomePage() {
               serviceAreas={parsedServiceAreas}
               disqualifiedPropertyTypes={disqualifiedPropertyTypes}
               disqualifiedOwnershipLengths={disqualifiedOwnershipLengths}
-              allowedStates={allowedStates}
+              allowedStates={allowedStates} allowedCounties={allowedCounties}
               motivationV2={config.motivationV2}
             />
           </div>
