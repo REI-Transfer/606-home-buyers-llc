@@ -93,6 +93,10 @@ export async function POST(request: Request) {
           sid: gfSid || undefined,
           formId: "rei-survey-template",
           formTitle: `${process.env.COMPANY_NAME || "REI"} Survey`,
+          // Subject property — the house the seller is selling. Read by
+          // GoFunnel's real-estate property enrichment. NOT an identity
+          // field: it never participates in lead matching.
+          propertyAddress: gfStr(data.address),
           idempotencyKey: gfStr(data.meta_event_id),
           leadQuestions: {
             is_legal_owner: gfStr(data.isLegalOwner),
