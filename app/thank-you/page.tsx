@@ -3,6 +3,7 @@ import Link from "next/link"
 import { CheckCircle2, Phone, MessageSquare } from "lucide-react"
 import config from "@/lib/config"
 import { ClickToPlayVideo } from "@/components/thankyou/click-to-play-video"
+import { THANKYOU_GROUPS, HERO_VIDEO } from "@/lib/thankyou-videos"
 import { ContactCTA } from "@/components/article/contact-cta"
 import { ARTICLES } from "@/lib/articles"
 import { isYouTubeUrl, toYouTubeEmbed } from "@/lib/youtube"
@@ -12,7 +13,7 @@ const RECOMMENDED_READS = ARTICLES.slice(0, 4)
 // Per-client env vars (read on the server). All optional — when unset, the
 // page falls back to the original simpler layout so non-ABQ clients are
 // unaffected.
-const TOP_VIDEO_URL = process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_URL || ""
+const TOP_VIDEO_URL = process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_URL || HERO_VIDEO.url
 const VIDEO_2_URL = process.env.NEXT_PUBLIC_THANKYOU_VIDEO_2_URL || ""
 const VIDEO_2_TITLE = process.env.NEXT_PUBLIC_THANKYOU_VIDEO_2_TITLE || ""
 const VIDEO_2_SUBTITLE = process.env.NEXT_PUBLIC_THANKYOU_VIDEO_2_SUBTITLE || ""
@@ -41,10 +42,7 @@ export default function ThankYouPage() {
 }
 
 function ThankYouV2() {
-  const followupVideos = [
-    { url: VIDEO_2_URL, title: VIDEO_2_TITLE, subtitle: VIDEO_2_SUBTITLE },
-    { url: VIDEO_3_URL, title: VIDEO_3_TITLE, subtitle: VIDEO_3_SUBTITLE },
-  ].filter((v) => v.url)
+  // Follow-up videos now come from lib/thankyou-videos (THANKYOU_GROUPS).
 
   const callinDisplay = CALLIN_DISPLAY || config.phoneDisplay
   const callinHref = (CALLIN_HREF || config.phoneHref || "").replace(/^tel:/, "")
@@ -93,14 +91,14 @@ function ThankYouV2() {
         <div className="mx-auto max-w-4xl px-4">
           <div className="mb-4 text-center">
             <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-              {process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_TITLE || "Thank You for Filling Out the Form"}
+              {process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_TITLE || HERO_VIDEO.title}
             </h2>
           </div>
           <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-black">
             {isYouTubeUrl(TOP_VIDEO_URL) ? (
               <iframe
                 src={`${toYouTubeEmbed(TOP_VIDEO_URL)}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`}
-                title={process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_TITLE || "Thank You for Filling Out the Form"}
+                title={process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_TITLE || HERO_VIDEO.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="w-full block"
@@ -163,7 +161,7 @@ function ThankYouV2() {
         </section>
       )}
 
-      {followupVideos.length > 0 && (
+      {THANKYOU_GROUPS.length > 0 && (
         <section className="bg-[#FAFAF9] py-14 md:py-20">
           <div className="mx-auto max-w-4xl px-4">
             <div className="text-center mb-10">
@@ -172,16 +170,22 @@ function ThankYouV2() {
                 Quick answers to what most sellers ask next.
               </h2>
             </div>
-            <div className="space-y-12">
-              {followupVideos.map((v) => (
-                <div key={v.url}>
-                  {(v.title || v.subtitle) && (
-                    <div className="mb-4 text-center">
-                      {v.title && <h3 className="text-xl md:text-2xl font-bold text-gray-900">{v.title}</h3>}
-                      {v.subtitle && <p className="text-sm md:text-base text-gray-600 mt-1">{v.subtitle}</p>}
-                    </div>
-                  )}
-                  <ClickToPlayVideo src={v.url} title={v.title || "Video"} />
+            <div className="space-y-16">
+              {THANKYOU_GROUPS.map((group) => (
+                <div key={group.heading}>
+                  <div className="mb-6 text-center">
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900">{group.heading}</h3>
+                  </div>
+                  <div className="space-y-10">
+                    {group.videos.map((v) => (
+                      <div key={v.url}>
+                        <div className="mb-3 text-center">
+                          <h4 className="text-lg md:text-xl font-semibold text-gray-800">{v.title}</h4>
+                        </div>
+                        <ClickToPlayVideo src={v.url} title={v.title} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

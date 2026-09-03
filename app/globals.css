@@ -124,3 +124,59 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* ===== v2 landing theme (ported from rei-survey-template-v2) ===== */
+.v2-light {
+  --background: #FFFFFF;
+  --foreground: #0F1D2F;
+  --card: #FFFFFF;
+  --card-foreground: #0F1D2F;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F1D2F;
+  --primary: #1B2A4A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F7FA;
+  --secondary-foreground: #0F1D2F;
+  --muted: #F5F7FA;
+  --muted-foreground: #5A6B7D;
+  --accent: #2A9D8F;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #E2E8F0;
+  --input: #FFFFFF;
+  --ring: #1B2A4A;
+  background-color: #FFFFFF;
+  color: #0F1D2F;
+}
+
+/* V2 page animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(60px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounce-x {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+.animate-bounce-x { animation: bounce-x 1.5s ease-in-out infinite; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-reveal-up { animation: reveal-up 0.8s ease-out forwards; }
+.animate-scale-in { animation: scale-in 0.6s ease-out forwards; }
+
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
