@@ -33,6 +33,9 @@ export function VideoLibrary({ categories }: { categories: VideoCategory[] }) {
           <video
             key={selected.id}
             controls
+            autoPlay
+            muted
+            playsInline
             preload="metadata"
             className="absolute inset-0 w-full h-full object-cover"
             src={selected.url}
