@@ -4,7 +4,7 @@ import { useRef, useState } from "react"
 import { Play } from "lucide-react"
 import { isYouTubeUrl, toYouTubeEmbed } from "@/lib/youtube"
 
-export function ClickToPlayVideo({ src, title }: { src: string; title: string }) {
+export function ClickToPlayVideo({ src, title, aspect = "16/9", className = "" }: { src: string; title: string; aspect?: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null)
   const [playing, setPlaying] = useState(false)
 
@@ -17,21 +17,21 @@ export function ClickToPlayVideo({ src, title }: { src: string; title: string })
 
   if (isYouTubeUrl(src)) {
     return (
-      <div className="relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-black">
+      <div className={`relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-black ${className}`}>
         <iframe
           src={`${toYouTubeEmbed(src)}?rel=0&modestbranding=1&playsinline=1`}
           title={title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
           className="w-full block"
-          style={{ aspectRatio: "16/9", border: 0 }}
+          style={{ aspectRatio: aspect, border: 0 }}
         />
       </div>
     )
   }
 
   return (
-    <div className="relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-black">
+    <div className={`relative rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-black ${className}`}>
       <video
         ref={ref}
         src={src}
@@ -39,7 +39,7 @@ export function ClickToPlayVideo({ src, title }: { src: string; title: string })
         playsInline
         preload="metadata"
         className="w-full block"
-        style={{ aspectRatio: "16/9", objectFit: "cover" }}
+        style={{ aspectRatio: aspect, objectFit: "cover" }}
         aria-label={title}
       />
       {!playing && (

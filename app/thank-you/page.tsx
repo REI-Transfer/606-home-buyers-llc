@@ -3,6 +3,8 @@ import Link from "next/link"
 import { CheckCircle2, Phone, MessageSquare } from "lucide-react"
 import config from "@/lib/config"
 import { ClickToPlayVideo } from "@/components/thankyou/click-to-play-video"
+import { VIDEO_LIBRARY } from "@/lib/thankyou-videos"
+import { VideoLibrary } from "@/components/thankyou/video-library"
 import { ContactCTA } from "@/components/article/contact-cta"
 import { ARTICLES } from "@/lib/articles"
 import { isYouTubeUrl, toYouTubeEmbed } from "@/lib/youtube"
@@ -33,7 +35,7 @@ const SHOW_NEXT_STEPS = truthy(process.env.NEXT_PUBLIC_THANKYOU_SHOW_NEXT_STEPS)
 
 // New "v2" thank-you layout activates only when the top video env var is set.
 // Existing clients without the env var see the original layout untouched.
-const useV2Layout = Boolean(TOP_VIDEO_URL)
+const useV2Layout = VIDEO_LIBRARY.length > 0
 
 export default function ThankYouPage() {
   if (useV2Layout) return <ThankYouV2 />
@@ -41,10 +43,6 @@ export default function ThankYouPage() {
 }
 
 function ThankYouV2() {
-  const followupVideos = [
-    { url: VIDEO_2_URL, title: VIDEO_2_TITLE, subtitle: VIDEO_2_SUBTITLE },
-    { url: VIDEO_3_URL, title: VIDEO_3_TITLE, subtitle: VIDEO_3_SUBTITLE },
-  ].filter((v) => v.url)
 
   const callinDisplay = CALLIN_DISPLAY || config.phoneDisplay
   const callinHref = (CALLIN_HREF || config.phoneHref || "").replace(/^tel:/, "")
@@ -89,37 +87,6 @@ function ThankYouV2() {
         </div>
       </section>
 
-      <section className="bg-white pb-12">
-        <div className="mx-auto max-w-4xl px-4">
-          <div className="mb-4 text-center">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-              {process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_TITLE || "Thank You for Filling Out the Form"}
-            </h2>
-          </div>
-          <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-black">
-            {isYouTubeUrl(TOP_VIDEO_URL) ? (
-              <iframe
-                src={`${toYouTubeEmbed(TOP_VIDEO_URL)}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`}
-                title={process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_TITLE || "Thank You for Filling Out the Form"}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full block"
-                style={{ aspectRatio: "16/9", border: 0 }}
-              />
-            ) : (
-              <video
-                src={TOP_VIDEO_URL}
-                autoPlay
-                muted
-                playsInline
-                controls
-                className="w-full block"
-                style={{ aspectRatio: "16/9", objectFit: "cover" }}
-              />
-            )}
-          </div>
-        </div>
-      </section>
 
       {callinDisplay && (
         <section className="bg-[#FAFAF9]">
@@ -163,28 +130,15 @@ function ThankYouV2() {
         </section>
       )}
 
-      {followupVideos.length > 0 && (
+      {VIDEO_LIBRARY.length > 0 && (
         <section className="bg-[#FAFAF9] py-14 md:py-20">
-          <div className="mx-auto max-w-4xl px-4">
-            <div className="text-center mb-10">
+          <div className="mx-auto max-w-5xl px-4">
+            <div className="text-center mb-8">
               <p className="uppercase tracking-widest text-xs font-semibold text-gray-500 mb-2">While You Wait</p>
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 text-balance">
-                Quick answers to what most sellers ask next.
-              </h2>
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 text-balance">Browse Our Video Library</h2>
+              <p className="mt-2 text-base text-gray-600">Pick a topic and watch the short answer — no call required.</p>
             </div>
-            <div className="space-y-12">
-              {followupVideos.map((v) => (
-                <div key={v.url}>
-                  {(v.title || v.subtitle) && (
-                    <div className="mb-4 text-center">
-                      {v.title && <h3 className="text-xl md:text-2xl font-bold text-gray-900">{v.title}</h3>}
-                      {v.subtitle && <p className="text-sm md:text-base text-gray-600 mt-1">{v.subtitle}</p>}
-                    </div>
-                  )}
-                  <ClickToPlayVideo src={v.url} title={v.title || "Video"} />
-                </div>
-              ))}
-            </div>
+            <VideoLibrary categories={VIDEO_LIBRARY} />
           </div>
         </section>
       )}

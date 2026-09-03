@@ -61,6 +61,10 @@ const config = {
   // @main projects that never set ALLOWED_STATES.
   allowedStates:   process.env.ALLOWED_STATES ?? "",
   allowedCounties: process.env.ALLOWED_COUNTIES ?? "",
+  callinDisplay:   process.env.NEXT_PUBLIC_CALLIN_DISPLAY ?? "",
+  callinHref:      process.env.NEXT_PUBLIC_CALLIN_HREF    ?? "",
+  foundersPhotoUrl: process.env.FOUNDERS_PHOTO_URL ?? process.env.HEADSHOT_URL ?? "",
+  foundersCaption:  process.env.FOUNDERS_CAPTION  ?? "",
 
   // Webhook (server-side only — never exposed to browser)
   webhookUrl:      process.env.WEBHOOK_URL ?? "",
