@@ -3,7 +3,8 @@ import Link from "next/link"
 import { CheckCircle2, Phone, MessageSquare } from "lucide-react"
 import config from "@/lib/config"
 import { ClickToPlayVideo } from "@/components/thankyou/click-to-play-video"
-import { THANKYOU_GROUPS, HERO_VIDEO } from "@/lib/thankyou-videos"
+import { VIDEO_LIBRARY } from "@/lib/thankyou-videos"
+import { VideoLibrary } from "@/components/thankyou/video-library"
 import { ContactCTA } from "@/components/article/contact-cta"
 import { ARTICLES } from "@/lib/articles"
 import { isYouTubeUrl, toYouTubeEmbed } from "@/lib/youtube"
@@ -13,7 +14,7 @@ const RECOMMENDED_READS = ARTICLES.slice(0, 4)
 // Per-client env vars (read on the server). All optional — when unset, the
 // page falls back to the original simpler layout so non-ABQ clients are
 // unaffected.
-const TOP_VIDEO_URL = process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_URL || HERO_VIDEO.url
+const TOP_VIDEO_URL = process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_URL || ""
 const VIDEO_2_URL = process.env.NEXT_PUBLIC_THANKYOU_VIDEO_2_URL || ""
 const VIDEO_2_TITLE = process.env.NEXT_PUBLIC_THANKYOU_VIDEO_2_TITLE || ""
 const VIDEO_2_SUBTITLE = process.env.NEXT_PUBLIC_THANKYOU_VIDEO_2_SUBTITLE || ""
@@ -34,7 +35,7 @@ const SHOW_NEXT_STEPS = truthy(process.env.NEXT_PUBLIC_THANKYOU_SHOW_NEXT_STEPS)
 
 // New "v2" thank-you layout activates only when the top video env var is set.
 // Existing clients without the env var see the original layout untouched.
-const useV2Layout = Boolean(TOP_VIDEO_URL)
+const useV2Layout = VIDEO_LIBRARY.length > 0
 
 export default function ThankYouPage() {
   if (useV2Layout) return <ThankYouV2 />
@@ -42,7 +43,6 @@ export default function ThankYouPage() {
 }
 
 function ThankYouV2() {
-  // Follow-up videos now come from lib/thankyou-videos (THANKYOU_GROUPS).
 
   const callinDisplay = CALLIN_DISPLAY || config.phoneDisplay
   const callinHref = (CALLIN_HREF || config.phoneHref || "").replace(/^tel:/, "")
@@ -87,37 +87,6 @@ function ThankYouV2() {
         </div>
       </section>
 
-      <section className="bg-white pb-12">
-        <div className="mx-auto max-w-4xl px-4">
-          <div className="mb-4 text-center">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-              {process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_TITLE || HERO_VIDEO.title}
-            </h2>
-          </div>
-          <div className="mx-auto w-full max-w-[340px] rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-black">
-            {isYouTubeUrl(TOP_VIDEO_URL) ? (
-              <iframe
-                src={`${toYouTubeEmbed(TOP_VIDEO_URL)}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`}
-                title={process.env.NEXT_PUBLIC_THANKYOU_TOP_VIDEO_TITLE || HERO_VIDEO.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full block"
-                style={{ aspectRatio: "9/16", border: 0 }}
-              />
-            ) : (
-              <video
-                src={TOP_VIDEO_URL}
-                autoPlay
-                muted
-                playsInline
-                controls
-                className="w-full block"
-                style={{ aspectRatio: "9/16", objectFit: "cover" }}
-              />
-            )}
-          </div>
-        </div>
-      </section>
 
       {callinDisplay && (
         <section className="bg-[#FAFAF9]">
@@ -161,32 +130,15 @@ function ThankYouV2() {
         </section>
       )}
 
-      {THANKYOU_GROUPS.length > 0 && (
+      {VIDEO_LIBRARY.length > 0 && (
         <section className="bg-[#FAFAF9] py-14 md:py-20">
           <div className="mx-auto max-w-5xl px-4">
-            <div className="text-center mb-10">
+            <div className="text-center mb-8">
               <p className="uppercase tracking-widest text-xs font-semibold text-gray-500 mb-2">While You Wait</p>
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 text-balance">
-                Quick answers to what most sellers ask next.
-              </h2>
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 text-balance">Browse Our Video Library</h2>
+              <p className="mt-2 text-base text-gray-600">Pick a topic and watch the short answer — no call required.</p>
             </div>
-            <div className="rounded-2xl border border-gray-200 shadow-sm bg-white px-4 py-8 md:px-8 md:py-10 space-y-12">
-              {THANKYOU_GROUPS.map((group) => (
-                <div key={group.heading}>
-                  <div className="mb-5 text-center">
-                    <h3 className="text-xl md:text-2xl font-bold text-gray-900">{group.heading}</h3>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                    {group.videos.map((v) => (
-                      <div key={v.url} className="flex flex-col">
-                        <ClickToPlayVideo src={v.url} title={v.title} aspect="9/16" className="mx-auto w-full max-w-[260px]" />
-                        <p className="mt-2 text-center text-sm font-medium text-gray-800">{v.title}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <VideoLibrary categories={VIDEO_LIBRARY} />
           </div>
         </section>
       )}
