@@ -7,7 +7,7 @@ import { AddressAutocomplete, type AddressDetails } from "@/components/survey/ad
 import { isWithinServiceArea } from "@/lib/service-area";
 import { marketPhrase, type Brand } from "@/lib/brand";
 
-export function HeroSection({ brand, allowedCounties = [] }: { brand: Brand; allowedCounties?: string[] }) {
+export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }: { brand: Brand; allowedCounties?: string[]; allowedStates?: string[] }) {
   const [showSurvey, setShowSurvey] = useState(false);
   const [initialAddress, setInitialAddress] = useState("");
   const [addressVerified, setAddressVerified] = useState(false);
@@ -15,15 +15,24 @@ export function HeroSection({ brand, allowedCounties = [] }: { brand: Brand; all
 
   const hasPhoto = !!brand.foundersPhotoUrl;
 
+  // State allow-list (env ALLOWED_STATES). Empty -> no state gate. Case-insensitive.
+  const stateOk = (details: AddressDetails) =>
+    allowedStates.length === 0 ||
+    !!(details.state && allowedStates.map((s) => s.toUpperCase()).includes(details.state.toUpperCase()));
+
+  // County allow-list (env ALLOWED_COUNTIES), scoped by the configured state(s):
+  // county names repeat across states, so require an allowed state AND the county in
+  // the list. Empty -> no county gate. (Previously hardcoded to "TX"; the scope now
+  // comes from ALLOWED_STATES so non-Texas clients can county-gate too.)
   const countyOk = (details: AddressDetails) => {
     if (!allowedCounties || allowedCounties.length === 0) return true;
     const n = (c?: string) => (c || "").replace(/\s+county$/i, "").trim().toLowerCase();
-    return !!(details.state && details.state.toUpperCase() === "TX" && details.county && allowedCounties.map(n).includes(n(details.county)));
+    return !!(stateOk(details) && details.county && allowedCounties.map(n).includes(n(details.county)));
   };
 
   const handleAddressSelect = (address: string, details: AddressDetails) => {
     // Env-driven service-area gate. Permissive when NEXT_PUBLIC_SERVICE_AREAS is empty.
-    if (countyOk(details) && isWithinServiceArea(details.lat, details.lng)) {
+    if (stateOk(details) && countyOk(details) && isWithinServiceArea(details.lat, details.lng)) {
       setInitialAddress(address);
       setAddressVerified(true);
       setOutsideAreaError(false);
@@ -101,6 +110,9 @@ export function HeroSection({ brand, allowedCounties = [] }: { brand: Brand; all
                     value={initialAddress}
                     onChange={(address) => { setInitialAddress(address); setAddressVerified(false); setOutsideAreaError(false); }}
                     onSelect={handleAddressSelect}
+                    onOutOfArea={(address) => { setInitialAddress(address); setAddressVerified(false); setOutsideAreaError(true); }}
+                    allowedStates={allowedStates}
+                    allowedCounties={allowedCounties}
                     placeholder="Enter your property address..."
                     className="[&_input]:h-14 [&_input]:text-lg [&_input]:rounded-2xl [&_input]:shadow-lg [&_input]:border-[#1B2A4A]/30 [&_input]:bg-white"
                   />

@@ -12,10 +12,11 @@ import config from "@/lib/config";
 export default function HomePage() {
   const brand = buildBrand();
   const allowedCounties = config.allowedCounties.split(",").map((s) => s.trim()).filter(Boolean);
+  const allowedStates = config.allowedStates.split(",").map((s) => s.trim()).filter(Boolean);
   return (
     <main className="v2-light min-h-screen" style={{ ["--brand-accent" as any]: brand.accentColor }}>
       <Header brand={brand} />
-      <HeroSection brand={brand} allowedCounties={allowedCounties} />
+      <HeroSection brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
       <PhilosophySection brand={brand} />
       <VslSection brand={brand} />
       <TrustSection brand={brand} />

@@ -178,14 +178,18 @@ export function AddressAutocomplete({
         return
       }
 
-      // County allow-list gate (env ALLOWED_COUNTIES), TX-SCOPED: county names repeat across
-      // states (Montgomery, Harris, ...), so require state === "TX" AND county in the list.
-      // Google Places gives the county as long_name (e.g. "Harris County"); normalize by
-      // stripping a trailing " County". Empty list -> no county gate.
+      // County allow-list gate (env ALLOWED_COUNTIES), STATE-SCOPED via ALLOWED_STATES:
+      // county names repeat across states (Montgomery, Harris, ...), so require the address
+      // state to be in ALLOWED_STATES AND the county in the list. Google Places gives the
+      // county as long_name (e.g. "Harris County"); normalize by stripping " County".
+      // Empty ALLOWED_COUNTIES -> no county gate; empty ALLOWED_STATES -> no state scoping.
       if (allowedCounties.length > 0) {
         const normCounty = (c: string) => (c || "").replace(/\s+county$/i, "").trim().toLowerCase()
         const inList = allowedCounties.map(normCounty).includes(normCounty(county))
-        if (!(state && state.toUpperCase() === "TX" && county && inList)) {
+        const stateOk = allowedStates.length === 0
+          ? true
+          : (!!state && allowedStates.map(s => s.toUpperCase()).includes(state.toUpperCase()))
+        if (!(stateOk && county && inList)) {
           onChange(place.formatted_address)
           onOutOfArea?.(place.formatted_address)
           return
