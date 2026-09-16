@@ -265,6 +265,8 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [] }: Surv
         const payload = {
           ...surveyData,
           ...trackingRef.current,
+          // /api/submit requires a top-level `name`; SurveyData only has first/last.
+          name: `${surveyData.firstName} ${surveyData.lastName}`.trim(),
           source: process.env.NEXT_PUBLIC_LEAD_SOURCE || `${brand.companyName} - Survey`,
           submittedAt: new Date().toISOString(),
           qualified,
