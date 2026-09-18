@@ -163,6 +163,20 @@
     "description": "n8n lead handler webhook. Format: https://n8n.srv1197128.hstgr.cloud/webhook/lead-{slug}."
   },
   {
+    "name": "WEBHOOK_URL_EARLY",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "description": "Optional. Two-step form: receives lead_stage='early' (stage 1 contact details). Unset: falls back to WEBHOOK_URL."
+  },
+  {
+    "name": "WEBHOOK_URL_COMPLETE",
+    "type": "string",
+    "required": false,
+    "scope": "server",
+    "description": "Optional. Two-step form: receives lead_stage='complete' (final answers). Unset: falls back to WEBHOOK_URL."
+  },
+  {
     "name": "NEXT_PUBLIC_GOOGLE_PLACES_API_KEY",
     "type": "string",
     "required": true,
