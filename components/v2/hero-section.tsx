@@ -162,7 +162,7 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
               </div>
             ) : (
               <div>
-                <SurveyCard initialAddress={initialAddress} brand={brand} allowedCounties={allowedCounties} />
+                <SurveyCard initialAddress={initialAddress} brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
               </div>
             )}
           </div>

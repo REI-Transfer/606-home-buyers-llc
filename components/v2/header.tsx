@@ -8,11 +8,15 @@ import { AddressAutocomplete, type AddressDetails } from "@/components/survey/ad
 import { SurveyCard } from "@/components/v2/survey-card";
 import type { Brand } from "@/lib/brand";
 
-export function Header({ brand }: { brand: Brand }) {
+export function Header({ brand, allowedCounties = [], allowedStates = [] }: { brand: Brand; allowedCounties?: string[]; allowedStates?: string[] }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [pastHero, setPastHero] = useState(false);
   const [address, setAddress] = useState("");
   const [showSurvey, setShowSurvey] = useState(false);
+  // The scrolled-header address box skips the survey's address step, so it must
+  // pass the same location gate as the hero before it opens the survey.
+  const [addressOk, setAddressOk] = useState(false);
+  const [outOfArea, setOutOfArea] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +33,8 @@ export function Header({ brand }: { brand: Brand }) {
 
   const handleAddressSelect = (addr: string, details: AddressDetails) => {
     setAddress(addr);
+    setAddressOk(true);
+    setOutOfArea(false);
     setShowSurvey(true);
   };
 
@@ -56,19 +62,27 @@ export function Header({ brand }: { brand: Brand }) {
                 <div className="relative flex-1">
                   <AddressAutocomplete
                     value={address}
-                    onChange={setAddress}
+                    onChange={(a) => { setAddress(a); setAddressOk(false); setOutOfArea(false); }}
                     onSelect={handleAddressSelect}
+                    onOutOfArea={(a) => { setAddress(a); setAddressOk(false); setOutOfArea(true); }}
+                    allowedStates={allowedStates}
+                    allowedCounties={allowedCounties}
                     placeholder="Enter your address..."
                     className="[&_input]:h-9 [&_input]:text-sm [&_input]:rounded-lg [&_input]:bg-[#F5F7FA] [&_input]:border-[#E2E8F0]"
                   />
                 </div>
                 <button
-                  onClick={() => { if (address.trim()) setShowSurvey(true); }}
+                  onClick={() => { if (addressOk) setShowSurvey(true); }}
                   className="shrink-0 h-9 px-4 bg-[#1B2A4A] hover:bg-[#131E36] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
                 >
                   Go
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
+                {outOfArea && (
+                  <p className="absolute left-0 top-full mt-1 text-xs font-medium" style={{ color: "#dc2626" }}>
+                    That address is outside our buying area.
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -110,7 +124,7 @@ export function Header({ brand }: { brand: Brand }) {
             >
               Close
             </button>
-            <SurveyCard initialAddress={address} brand={brand} />
+            <SurveyCard initialAddress={addressOk ? address : ""} brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
           </div>
         </div>
       )}
