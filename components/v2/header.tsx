@@ -44,7 +44,7 @@ export function Header({ brand }: { brand: Brand }) {
         <div className="flex items-center justify-between transition-all duration-300 px-4 pl-6 py-2.5 md:px-10 md:py-5">
           <Link href="#hero" className="min-w-0 flex-shrink mr-3">
             {brand.logoUrl ? (
-              <img src={brand.logoUrl} alt={brand.companyName} width={320} height={80} className="h-12 md:h-20 w-auto max-w-[46vw] md:max-w-[280px] object-contain" />
+              <img src={brand.logoUrl} alt={brand.companyName} width={320} height={80} className="h-16 md:h-20 w-auto max-w-[56vw] md:max-w-[280px] object-contain" />
             ) : (
               <span className="block truncate max-w-[52vw] md:max-w-[420px] text-base md:text-2xl font-bold tracking-tight text-[#0F1D2F]">{brand.companyName}</span>
             )}
@@ -93,7 +93,7 @@ export function Header({ brand }: { brand: Brand }) {
           {!pastHero && (
             <button
               onClick={() => setShowSurvey(true)}
-              className="shrink-0 whitespace-nowrap px-3 py-1.5 text-xs md:px-5 md:py-2 md:text-sm font-medium transition-all rounded-full bg-[#1B2A4A] text-white hover:bg-[#131E36]"
+              className="shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-5 md:py-2 md:text-sm font-semibold transition-all rounded-full bg-[#1B2A4A] text-white hover:bg-[#131E36]"
             >
               Get Cash Offer
             </button>
