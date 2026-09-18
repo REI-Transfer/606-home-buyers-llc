@@ -15,7 +15,7 @@ export default function HomePage() {
   const allowedStates = config.allowedStates.split(",").map((s) => s.trim()).filter(Boolean);
   return (
     <main className="v2-light min-h-screen" style={{ ["--brand-accent" as any]: brand.accentColor }}>
-      <Header brand={brand} />
+      <Header brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
       <HeroSection brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
       <PhilosophySection brand={brand} />
       <VslSection brand={brand} />

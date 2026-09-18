@@ -45,7 +45,7 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
 
   return (
     <section id="hero" className="relative bg-white overflow-hidden">
-      <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-stretch min-h-[100dvh] px-4 pt-28 pb-8 md:px-12 md:pb-20 lg:px-16 lg:pt-16 lg:pb-0 gap-6 lg:gap-0">
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center lg:items-stretch min-h-[100dvh] px-4 pt-24 pb-6 md:px-12 md:pb-20 lg:px-16 lg:pt-16 lg:pb-0 gap-6 lg:gap-0">
 
         {/* Left — owner cut-out photo (desktop only) */}
         {hasPhoto && (
@@ -66,7 +66,7 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
         {/* Right — form content */}
         <div className={`w-full flex flex-col items-center justify-center lg:py-20 ${hasPhoto ? "lg:w-[55%]" : "lg:w-full"}`}>
           {/* Trust badges */}
-          <div className="hidden md:flex flex-wrap items-center justify-center gap-6 mb-4 mt-4 lg:mt-0 animate-reveal-up">
+          <div className="hidden md:flex flex-wrap items-center justify-center gap-6 mb-4 mt-4 lg:mt-0">
             <div className="flex items-center gap-2 text-[#5A6B7D] text-base">
               <Shield className="h-4 w-4 text-[#1B2A4A]" />
               <span>Trusted </span>
@@ -82,7 +82,7 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
           </div>
 
           {/* Main headline */}
-          <h1 className="text-center text-2xl font-bold leading-tight tracking-tight text-[#0F1D2F] md:text-5xl lg:text-5xl max-w-2xl animate-reveal-up animation-delay-100">
+          <h1 className="text-center text-3xl sm:text-4xl font-bold leading-tight tracking-tight text-[#0F1D2F] md:text-5xl lg:text-5xl max-w-2xl" style={{ textWrap: "balance" } as React.CSSProperties}>
             {brand.headline}
             {brand.headlineAccent && (
               <>
@@ -93,12 +93,12 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
           </h1>
 
           {/* Subheadline */}
-          <p className="mt-2 md:mt-4 text-center text-base md:text-xl text-[#5A6B7D] max-w-xl leading-relaxed animate-reveal-up animation-delay-200">
+          <p className="mt-3 md:mt-4 text-center text-base sm:text-lg md:text-xl text-[#5A6B7D] max-w-xl leading-relaxed">
             {brand.subheadline}
           </p>
 
           {/* Address Input or Survey */}
-          <div className="mt-4 md:mt-6 w-full max-w-2xl animate-reveal-up animation-delay-300">
+          <div className="mt-4 md:mt-6 w-full max-w-2xl">
             {!showSurvey ? (
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col items-center gap-1">
@@ -133,7 +133,7 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
                   Takes less than 2 minutes. No obligation.
                 </p>
                 {/* Generic trust badges */}
-                <div className="flex flex-col items-start md:flex-row md:items-center md:justify-center gap-1.5 md:gap-5 mt-2 md:mt-3">
+                <div className="flex flex-row flex-wrap items-center justify-center gap-2 md:gap-5 mt-2 md:mt-3">
                   <div className="flex items-center gap-2 md:gap-3 bg-white rounded-xl px-2 py-1.5 md:px-6 md:py-4 shadow-sm border border-gray-200">
                     <span className="text-3xl md:text-5xl font-bold text-[#00529B]">A+</span>
                     <div className="flex flex-col leading-tight">
@@ -161,8 +161,8 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
                 </div>
               </div>
             ) : (
-              <div className="animate-scale-in">
-                <SurveyCard initialAddress={initialAddress} brand={brand} allowedCounties={allowedCounties} />
+              <div>
+                <SurveyCard initialAddress={initialAddress} brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
               </div>
             )}
           </div>

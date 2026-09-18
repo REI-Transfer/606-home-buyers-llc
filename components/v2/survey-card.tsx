@@ -224,6 +224,7 @@ type FbqFn = (...args: unknown[]) => void
 
 interface SurveyCardProps {
   allowedCounties?: string[];
+  allowedStates?: string[];
   // When set (hero / header already captured the address), Stage 1 starts at
   // the legal-owner question. Owner and listed are never skipped: they are
   // hard disqualifiers.
@@ -233,7 +234,7 @@ interface SurveyCardProps {
   brand: Brand
 }
 
-export function SurveyCard({ initialAddress, brand, allowedCounties = [] }: SurveyCardProps) {
+export function SurveyCard({ initialAddress, brand, allowedCounties = [], allowedStates = [] }: SurveyCardProps) {
   // ---- Stage state ----
   const [stage, setStage] = useState<1 | 2>(1)
   const [stage1Step, setStage1Step] = useState(initialAddress ? 2 : 1)
@@ -287,10 +288,17 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [] }: Surv
   // STAGE 1
   // ============================================================
 
+  // Same gate as the hero: state list (ALLOWED_STATES), then county list scoped
+  // to those states (ALLOWED_COUNTIES). Was hardcoded to "TX", which rejected
+  // every in-area address for non-Texas clients.
+  const stateOk = (details: AddressDetails) =>
+    allowedStates.length === 0 ||
+    !!(details.state && allowedStates.map((s) => s.toUpperCase()).includes(details.state.toUpperCase()));
+
   const countyOk = (details: AddressDetails) => {
     if (!allowedCounties || allowedCounties.length === 0) return true;
     const n = (c?: string) => (c || "").replace(/\s+county$/i, "").trim().toLowerCase();
-    return !!(details.state && details.state.toUpperCase() === "TX" && details.county && allowedCounties.map(n).includes(n(details.county)));
+    return !!(stateOk(details) && details.county && allowedCounties.map(n).includes(n(details.county)));
   };
 
   const handleAddressSelect = (address: string, details: AddressDetails) => {
@@ -301,7 +309,7 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [] }: Surv
 
     // Env-driven service-area gate. Permissive when NEXT_PUBLIC_SERVICE_AREAS is
     // empty (accepts any address). addressVerified only flips true after passing.
-    if (countyOk(details) && isWithinServiceArea(details.lat, details.lng)) {
+    if (stateOk(details) && countyOk(details) && isWithinServiceArea(details.lat, details.lng)) {
       setAddressVerified(true)
       setTimeout(() => { setStage1Step(2) }, 300)
       return
@@ -741,6 +749,9 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [] }: Surv
                 value={surveyData.address}
                 onChange={(address) => { setSurveyData({ ...surveyData, address }); setAddressVerified(false) }}
                 onSelect={handleAddressSelect}
+                onOutOfArea={() => { setAddressVerified(false); disqualify("outsideArea") }}
+                allowedStates={allowedStates}
+                allowedCounties={allowedCounties}
                 placeholder="Start typing your address..."
               />
               <Button

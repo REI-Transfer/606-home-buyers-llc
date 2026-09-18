@@ -8,11 +8,15 @@ import { AddressAutocomplete, type AddressDetails } from "@/components/survey/ad
 import { SurveyCard } from "@/components/v2/survey-card";
 import type { Brand } from "@/lib/brand";
 
-export function Header({ brand }: { brand: Brand }) {
+export function Header({ brand, allowedCounties = [], allowedStates = [] }: { brand: Brand; allowedCounties?: string[]; allowedStates?: string[] }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [pastHero, setPastHero] = useState(false);
   const [address, setAddress] = useState("");
   const [showSurvey, setShowSurvey] = useState(false);
+  // The scrolled-header address box skips the survey's address step, so it must
+  // pass the same location gate as the hero before it opens the survey.
+  const [addressOk, setAddressOk] = useState(false);
+  const [outOfArea, setOutOfArea] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +33,8 @@ export function Header({ brand }: { brand: Brand }) {
 
   const handleAddressSelect = (addr: string, details: AddressDetails) => {
     setAddress(addr);
+    setAddressOk(true);
+    setOutOfArea(false);
     setShowSurvey(true);
   };
 
@@ -44,7 +50,7 @@ export function Header({ brand }: { brand: Brand }) {
         <div className="flex items-center justify-between transition-all duration-300 px-4 pl-6 py-2.5 md:px-10 md:py-5">
           <Link href="#hero" className="min-w-0 flex-shrink mr-3">
             {brand.logoUrl ? (
-              <img src={brand.logoUrl} alt={brand.companyName} width={320} height={80} className="h-12 md:h-20 w-auto max-w-[46vw] md:max-w-[280px] object-contain" />
+              <img src={brand.logoUrl} alt={brand.companyName} width={320} height={80} className="h-16 md:h-20 w-auto max-w-[56vw] md:max-w-[280px] object-contain" />
             ) : (
               <span className="block truncate max-w-[52vw] md:max-w-[420px] text-base md:text-2xl font-bold tracking-tight text-[#0F1D2F]">{brand.companyName}</span>
             )}
@@ -56,19 +62,27 @@ export function Header({ brand }: { brand: Brand }) {
                 <div className="relative flex-1">
                   <AddressAutocomplete
                     value={address}
-                    onChange={setAddress}
+                    onChange={(a) => { setAddress(a); setAddressOk(false); setOutOfArea(false); }}
                     onSelect={handleAddressSelect}
+                    onOutOfArea={(a) => { setAddress(a); setAddressOk(false); setOutOfArea(true); }}
+                    allowedStates={allowedStates}
+                    allowedCounties={allowedCounties}
                     placeholder="Enter your address..."
                     className="[&_input]:h-9 [&_input]:text-sm [&_input]:rounded-lg [&_input]:bg-[#F5F7FA] [&_input]:border-[#E2E8F0]"
                   />
                 </div>
                 <button
-                  onClick={() => { if (address.trim()) setShowSurvey(true); }}
+                  onClick={() => { if (addressOk) setShowSurvey(true); }}
                   className="shrink-0 h-9 px-4 bg-[#1B2A4A] hover:bg-[#131E36] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
                 >
                   Go
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
+                {outOfArea && (
+                  <p className="absolute left-0 top-full mt-1 text-xs font-medium" style={{ color: "#dc2626" }}>
+                    That address is outside our buying area.
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -93,7 +107,7 @@ export function Header({ brand }: { brand: Brand }) {
           {!pastHero && (
             <button
               onClick={() => setShowSurvey(true)}
-              className="shrink-0 whitespace-nowrap px-3 py-1.5 text-xs md:px-5 md:py-2 md:text-sm font-medium transition-all rounded-full bg-[#1B2A4A] text-white hover:bg-[#131E36]"
+              className="shrink-0 whitespace-nowrap px-4 py-2.5 text-sm md:px-5 md:py-2 md:text-sm font-semibold transition-all rounded-full bg-[#1B2A4A] text-white hover:bg-[#131E36]"
             >
               Get Cash Offer
             </button>
@@ -110,7 +124,7 @@ export function Header({ brand }: { brand: Brand }) {
             >
               Close
             </button>
-            <SurveyCard initialAddress={address} brand={brand} />
+            <SurveyCard initialAddress={addressOk ? address : ""} brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
           </div>
         </div>
       )}
