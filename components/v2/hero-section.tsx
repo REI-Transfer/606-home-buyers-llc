@@ -45,26 +45,11 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
 
   return (
     <section id="hero" className="relative bg-white overflow-hidden">
-      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center lg:items-stretch min-h-[100dvh] px-4 pt-24 pb-6 md:px-12 md:pb-20 lg:px-16 lg:pt-16 lg:pb-0 gap-6 lg:gap-0">
+      <div className="relative z-10 flex flex-col items-center min-h-[100dvh] px-4 pt-24 pb-8 md:px-12 md:pb-20 lg:px-16 lg:pt-16 gap-6">
 
-        {/* Left — owner cut-out photo (desktop only) */}
-        {hasPhoto && (
-          <div className="hidden lg:flex lg:w-[45%] items-end justify-center relative">
-            <div className="flex flex-col items-center">
-              <img
-                src={brand.foundersPhotoUrl}
-                alt={brand.ownerName ? `${brand.ownerName}, ${brand.companyName}` : brand.companyName}
-                className="h-[80vh] w-auto object-contain object-bottom"
-              />
-              {brand.foundersCaption && (
-                <p className="text-center text-sm text-[#5A6B7D] pb-4 max-w-xs">{brand.foundersCaption}</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Right — form content */}
-        <div className={`w-full flex flex-col items-center justify-center lg:py-20 ${hasPhoto ? "lg:w-[55%]" : "lg:w-full"}`}>
+        {/* Form content — centered single column on every breakpoint. The owner
+            cut-out now lives BELOW the form rather than in a desktop side column. */}
+        <div className="w-full flex flex-col items-center justify-center lg:py-20">
           {/* Trust badges */}
           <div className="hidden md:flex flex-wrap items-center justify-center gap-6 mb-4 mt-4 lg:mt-0">
             <div className="flex items-center gap-2 text-[#5A6B7D] text-base">
@@ -167,17 +152,17 @@ export function HeroSection({ brand, allowedCounties = [], allowedStates = [] }:
             )}
           </div>
 
-          {/* Mobile — owner cut-out. Orientation-agnostic: the image renders at its
-              natural aspect ratio, capped to 300px tall AND the screen width, so
-              BOTH portrait and landscape headshots show in full — never cropped,
-              stretched, or overflowing. Desktop uses the left column. */}
+          {/* Owner cut-out — sits BELOW the form on every breakpoint (centered).
+              Orientation-agnostic: renders at natural aspect ratio, capped to a
+              breakpoint-scaled max height AND the screen width, so both portrait
+              and landscape headshots show in full — never cropped or overflowing. */}
           {hasPhoto && (
-            <div className="lg:hidden mt-8 w-full flex flex-col items-center">
+            <div className="mt-8 lg:mt-10 w-full flex flex-col items-center">
               <div className="relative inline-block overflow-hidden">
                 <img
                   src={brand.foundersPhotoUrl}
                   alt={brand.ownerName ? `${brand.ownerName}, ${brand.companyName}` : brand.companyName}
-                  className="block max-h-[300px] w-auto max-w-full object-contain"
+                  className="block max-h-[300px] md:max-h-[380px] lg:max-h-[460px] w-auto max-w-full object-contain"
                 />
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-white to-transparent" />
               </div>
