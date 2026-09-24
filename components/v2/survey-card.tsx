@@ -192,7 +192,7 @@ function validateName(name: string): { valid: boolean; msg: string } {
 // ─── Two-step flow ─────────────────────────────────────────────────────
 // Stage 1 (no progress bar, one question per screen):
 //   1 address → 2 legal owner → 3 listed on market → 4 contact details
-//   Contact submit fires the browser pixel custom event `LeadEarly` and POSTs
+//   Contact submit fires NO pixel event (LeadEarly removed) and POSTs
 //   lead_stage='early' to /api/submit, then moves to Stage 2.
 // Stage 2 (progress bar): the remaining qualification questions, in this
 //   survey's original order. The final answer submits lead_stage='complete'
@@ -339,7 +339,7 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [], allowe
     if (stage1Step > 1) setStage1Step(stage1Step - 1)
   }
 
-  // Contact submit: validate → anti-bot → LeadEarly pixel + early POST → Stage 2
+  // Contact submit: validate → anti-bot → early POST (no pixel event) → Stage 2
   const handleContactSubmit = async () => {
     const errors: {[key: string]: string} = {}
     const firstNameCheck = validateName(surveyData.firstName)
@@ -366,17 +366,6 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [], allowe
 
     const earlyEventId = `lead-early-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
     stage1EventIdRef.current = earlyEventId
-
-    try {
-      if (typeof window !== 'undefined' && (window as { fbq?: FbqFn }).fbq) {
-        const fbq = (window as { fbq: FbqFn }).fbq
-        fbq('trackCustom', 'LeadEarly', {
-          content_name: `${brand.companyName} Stage 1`, content_category: 'partial-lead',
-        }, { eventID: earlyEventId })
-      }
-    } catch {
-      // pixel failure must not block the user
-    }
 
     try {
       const fullName = `${surveyData.firstName.trim()} ${surveyData.lastName.trim()}`.trim()
