@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, MapPin, ArrowRight } from "lucide-react";
-import { AddressAutocomplete, type AddressDetails } from "@/components/survey/address-autocomplete";
+import { AddressAutocomplete, type AddressAutocompleteHandle, type AddressDetails } from "@/components/survey/address-autocomplete";
 import { SurveyCard } from "@/components/v2/survey-card";
 import type { Brand } from "@/lib/brand";
 
@@ -17,6 +17,8 @@ export function Header({ brand, allowedCounties = [], allowedStates = [] }: { br
   // pass the same location gate as the hero before it opens the survey.
   const [addressOk, setAddressOk] = useState(false);
   const [outOfArea, setOutOfArea] = useState(false);
+  const [addressDetails, setAddressDetails] = useState<AddressDetails | undefined>();
+  const addressRef = useRef<AddressAutocompleteHandle>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,9 +35,17 @@ export function Header({ brand, allowedCounties = [], allowedStates = [] }: { br
 
   const handleAddressSelect = (addr: string, details: AddressDetails) => {
     setAddress(addr);
+    setAddressDetails(details);
     setAddressOk(true);
     setOutOfArea(false);
     setShowSurvey(true);
+  };
+
+  // Go button and Enter: a typed address that wasn't picked from the list is
+  // looked up and sent through the same select / out-of-area path as tapping it.
+  const handleGo = () => {
+    if (addressOk) setShowSurvey(true);
+    else addressRef.current?.resolveTyped();
   };
 
   return (
@@ -61,6 +71,9 @@ export function Header({ brand, allowedCounties = [], allowedStates = [] }: { br
               <div className="relative w-full flex items-center gap-2">
                 <div className="relative flex-1">
                   <AddressAutocomplete
+                    ref={addressRef}
+                    onSubmit={handleGo}
+                    hintClassName="absolute left-0 top-full mt-1 text-xs font-medium"
                     value={address}
                     onChange={(a) => { setAddress(a); setAddressOk(false); setOutOfArea(false); }}
                     onSelect={handleAddressSelect}
@@ -72,7 +85,7 @@ export function Header({ brand, allowedCounties = [], allowedStates = [] }: { br
                   />
                 </div>
                 <button
-                  onClick={() => { if (addressOk) setShowSurvey(true); }}
+                  onClick={handleGo}
                   className="shrink-0 h-9 px-4 bg-[#1B2A4A] hover:bg-[#131E36] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
                 >
                   Go
@@ -124,7 +137,7 @@ export function Header({ brand, allowedCounties = [], allowedStates = [] }: { br
             >
               Close
             </button>
-            <SurveyCard initialAddress={addressOk ? address : ""} brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
+            <SurveyCard initialAddress={addressOk ? address : ""} initialDetails={addressOk ? addressDetails : undefined} brand={brand} allowedCounties={allowedCounties} allowedStates={allowedStates} />
           </div>
         </div>
       )}
