@@ -5,7 +5,7 @@ import { Home, ArrowRight, ArrowLeft, Check, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { captureTrackingData, getIPAddress, readGfSid } from "@/lib/tracking"
 import { Input } from "@/components/ui/input"
-import { AddressAutocomplete, type AddressDetails, type ServiceArea } from "./address-autocomplete"
+import { AddressAutocomplete, type AddressAutocompleteHandle, type AddressDetails, type ServiceArea } from "./address-autocomplete"
 
 interface SurveyData {
   address: string
@@ -320,13 +320,21 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
 
   // Address Continue: block out-of-area addresses with the disqualify screen
   // (service-area radius + ALLOWED_STATES, both evaluated in AddressAutocomplete).
-  const handleAddressContinue = () => {
+  const addressRef = useRef<AddressAutocompleteHandle>(null)
+  const handleAddressContinue = async () => {
     if (addressOutOfArea) {
       setDisqualifyReason("outOfArea")
       setIsDisqualified(true)
       return
     }
-    if (surveyData.address.trim().length > 0 && addressVerified) setStage1Step(2)
+    if (surveyData.address.trim().length > 0 && addressVerified) { setStage1Step(2); return }
+    // Typed but not picked from the list: look it up and run the same select /
+    // out-of-area path as tapping it. Out of area goes straight to the block
+    // screen, as the next Continue press would.
+    if ((await addressRef.current?.resolveTyped()) === "outOfArea") {
+      setDisqualifyReason("outOfArea")
+      setIsDisqualified(true)
+    }
   }
 
   const handleAddressSelect = (address: string, _details: AddressDetails) => {
@@ -735,6 +743,8 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
                 <p className="mt-1 text-sm text-gray-500">Start typing and select your address from the dropdown.</p>
               </div>
               <AddressAutocomplete
+                ref={addressRef}
+                onSubmit={handleAddressContinue}
                 value={surveyData.address}
                 onChange={(address) => { setSurveyData({ ...surveyData, address }); setAddressVerified(false); setAddressOutOfArea(false) }}
                 onSelect={handleAddressSelect}
@@ -864,7 +874,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
             {stage1Step === 1 && (
               <Button
                 onClick={handleAddressContinue}
-                disabled={!(surveyData.address.trim().length > 0 && addressVerified)}
+                disabled={!surveyData.address.trim()}
                 className="bg-[var(--accent)] text-white hover:bg-[var(--accent)] disabled:opacity-50"
               >
                 Continue

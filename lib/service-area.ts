@@ -69,3 +69,39 @@ export function isWithinServiceArea(
   if (lat === undefined || lng === undefined) return true
   return circles.some((c) => haversineMiles(lat, lng, c.lat, c.lng) <= c.radiusMiles)
 }
+
+export interface AddressBounds {
+  south: number
+  west: number
+  north: number
+  east: number
+}
+
+/**
+ * The box Google address suggestions are kept inside.
+ *   1. NEXT_PUBLIC_ADDRESS_BOUNDS = "south,west,north,east" (decimal degrees), when set and valid.
+ *   2. Otherwise the box around every NEXT_PUBLIC_SERVICE_AREAS circle (lat/lng ± radius in degrees).
+ *   3. Otherwise undefined: no box, suggestions stay nationwide (US only).
+ */
+export function getAddressBounds(): AddressBounds | undefined {
+  const raw = (process.env.NEXT_PUBLIC_ADDRESS_BOUNDS || "").trim()
+  if (raw) {
+    const p = raw.split(",").map((s) => Number(s.trim()))
+    if (p.length === 4 && p.every(Number.isFinite) && p[0] < p[2] && p[1] < p[3]) {
+      return { south: p[0], west: p[1], north: p[2], east: p[3] }
+    }
+  }
+
+  const circles = parseServiceAreas()
+  if (circles.length === 0) return undefined
+  const box = { south: 90, west: 180, north: -90, east: -180 }
+  for (const c of circles) {
+    const dLat = c.radiusMiles / 69 // 1 degree of latitude ≈ 69 miles
+    const dLng = c.radiusMiles / (69 * Math.max(0.01, Math.cos((c.lat * Math.PI) / 180)))
+    box.south = Math.min(box.south, c.lat - dLat)
+    box.north = Math.max(box.north, c.lat + dLat)
+    box.west = Math.min(box.west, c.lng - dLng)
+    box.east = Math.max(box.east, c.lng + dLng)
+  }
+  return box
+}

@@ -5,7 +5,7 @@ import { Home, ArrowRight, ArrowLeft, ArrowDown, Check, XCircle } from "lucide-r
 import { Button } from "@/components/ui/button"
 import { captureTrackingData, getIPAddress, readGfSid } from "@/lib/tracking"
 import { Input } from "@/components/ui/input"
-import { AddressAutocomplete, type AddressDetails } from "@/components/survey/address-autocomplete"
+import { AddressAutocomplete, type AddressAutocompleteHandle, type AddressDetails } from "@/components/survey/address-autocomplete"
 import { isWithinServiceArea } from "@/lib/service-area"
 import { marketPhrase, type Brand } from "@/lib/brand"
 
@@ -229,12 +229,14 @@ interface SurveyCardProps {
   // the legal-owner question. Owner and listed are never skipped: they are
   // hard disqualifiers.
   initialAddress?: string
+  // Google details for initialAddress, so city / state / ZIP reach the lead.
+  initialDetails?: AddressDetails
   // brand.companyName (config.companyName) names the company in the TCPA
   // consent text and the pixel content_name.
   brand: Brand
 }
 
-export function SurveyCard({ initialAddress, brand, allowedCounties = [], allowedStates = [] }: SurveyCardProps) {
+export function SurveyCard({ initialAddress, initialDetails, brand, allowedCounties = [], allowedStates = [] }: SurveyCardProps) {
   // ---- Stage state ----
   const [stage, setStage] = useState<1 | 2>(1)
   const [stage1Step, setStage1Step] = useState(initialAddress ? 2 : 1)
@@ -243,9 +245,9 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [], allowe
 
   const [surveyData, setSurveyData] = useState<SurveyData>({
     address: initialAddress || "",
-    city: "",
-    state: "",
-    zip: "",
+    city: initialDetails?.city || "",
+    state: initialDetails?.state?.toUpperCase() || "",
+    zip: initialDetails?.zip || "",
     propertyType: "",
     isLegalOwner: "",
     ownershipLength: "",
@@ -319,8 +321,12 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [], allowe
     disqualify("outsideArea")
   }
 
+  const addressRef = useRef<AddressAutocompleteHandle>(null)
+  // Typed but not picked from the list: look it up and run the same select /
+  // out-of-area path as tapping it.
   const handleAddressContinue = () => {
     if (surveyData.address.trim().length > 0 && addressVerified) setStage1Step(2)
+    else addressRef.current?.resolveTyped()
   }
 
   const handleOwnerSelect = (value: string) => {
@@ -735,6 +741,8 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [], allowe
                 <ArrowDown className="h-6 w-6 text-[#1B2A4A] animate-bounce" />
               </div>
               <AddressAutocomplete
+                ref={addressRef}
+                onSubmit={handleAddressContinue}
                 value={surveyData.address}
                 onChange={(address) => { setSurveyData({ ...surveyData, address }); setAddressVerified(false) }}
                 onSelect={handleAddressSelect}
@@ -745,7 +753,7 @@ export function SurveyCard({ initialAddress, brand, allowedCounties = [], allowe
               />
               <Button
                 onClick={handleAddressContinue}
-                disabled={!(surveyData.address.trim().length > 0 && addressVerified)}
+                disabled={!surveyData.address.trim()}
                 className="w-full h-14 bg-[#1B2A4A] text-white text-lg font-semibold rounded-xl hover:bg-[#131E36] disabled:opacity-40 transition-all shadow-md hover:shadow-lg"
               >
                 Get My Cash Offer
