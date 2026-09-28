@@ -93,7 +93,7 @@ export async function POST(request: Request) {
       const GF_BEARER = process.env.GOFUNNEL_WEBHOOK_SECRET || ""
       // Server-side Meta events only for the finished survey (William, 2026-09-18):
       // no GoFunnel forward for stage 1 partials or stage-2 disqualified sellers.
-      if (stage === "complete" && GF_CREDENTIAL_ID && GF_BEARER) {
+      if (stage !== "disqualified" && GF_CREDENTIAL_ID && GF_BEARER) {
         const gfCookie = request.headers.get("cookie") || ""
         const gfMatch = gfCookie.match(/(?:^|; )gf_sid=([^;]*)/)
         const gfSid = (data.gf_sid || (gfMatch ? decodeURIComponent(gfMatch[1]) : "") || "").toString().trim()
