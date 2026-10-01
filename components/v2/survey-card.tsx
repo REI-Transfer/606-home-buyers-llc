@@ -457,7 +457,22 @@ export function SurveyCard({ initialAddress, initialDetails, brand, allowedCount
         stage1_event_id: stage1EventIdRef.current,
       }
       // Fire weighted Meta Pixel event (browser-side; CAPI is a separate later phase)
-      if (typeof window !== 'undefined' && (window as { fbq?: FbqFn }).fbq) {
+      // Submit FIRST; only fire the Meta Pixel on a CONFIRMED successful submit, so a
+      // rejected or failed submit can no longer count a phantom Lead in Meta.
+      let submitOk = false
+      try {
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        const json = await res.json().catch(() => ({} as { success?: boolean }))
+        submitOk = res.ok && json.success === true
+        if (!submitOk) console.error('Submit rejected:', res.status)
+      } catch {
+        // network error — submitOk stays false; no pixel fires
+      }
+      if (submitOk && typeof window !== 'undefined' && (window as { fbq?: FbqFn }).fbq) {
         const fbq = (window as { fbq: FbqFn }).fbq
         if (qualified) {
           fbq('track', 'Lead', {
@@ -471,14 +486,6 @@ export function SurveyCard({ initialAddress, initialDetails, brand, allowedCount
             disqualify_reason: dqReason, lead_score: score,
           }, { eventID: eventId })
         }
-      }
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-      if (!res.ok) {
-        console.error('Submit failed:', res.status, await res.text())
       }
     } catch (e) {
       console.error('Submit error:', e)
