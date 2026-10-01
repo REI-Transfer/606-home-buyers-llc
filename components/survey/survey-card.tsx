@@ -486,8 +486,23 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         gf_sid: readGfSid(),
         ...trackingRef.current,
       }
-      // Fire weighted Meta Pixel event (browser-side; CAPI is a separate later phase)
-      if (typeof window !== 'undefined' && (window as { fbq?: FbqFn }).fbq) {
+      // Submit FIRST; only fire the Meta Pixel on a CONFIRMED successful submit, so a
+      // rejected or failed submit can no longer count a phantom Lead in Meta
+      // (same fix as rei-survey-template-v2#21, which only covered the one-step card).
+      let submitOk = false
+      try {
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        const json = await res.json().catch(() => ({} as { success?: boolean }))
+        submitOk = res.ok && json.success === true
+        if (!submitOk) console.error('Submit rejected:', res.status)
+      } catch {
+        // network error: submitOk stays false, no pixel fires
+      }
+      if (submitOk && typeof window !== 'undefined' && (window as { fbq?: FbqFn }).fbq) {
         const fbq = (window as { fbq: FbqFn }).fbq
         const brandName = companyName || getBrandName()
         if (qualified) {
@@ -503,11 +518,6 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
           }, { eventID: eventId })
         }
       }
-      await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
     } catch (e) {
       // Continue to thank-you even if webhook fails
     }
