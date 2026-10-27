@@ -111,8 +111,10 @@ function calculateLeadScore(d: SurveyData): number {
   const c = SCORE_CONDITION[d.condition] ?? 0
   return Math.min(10, t + o + r + c)
 }
+// Property types that qualify (form + Meta "Lead"): condo and townhouse included.
+const QUALIFIED_PROPERTY_TYPES = ['single-family', 'multi-family', 'condo', 'townhouse']
 function isQualifiedForMeta(d: SurveyData): boolean {
-  const okType = d.propertyType === 'single-family' || d.propertyType === 'multi-family'
+  const okType = QUALIFIED_PROPERTY_TYPES.includes(d.propertyType)
   const okListed = d.listedOnMarket === 'not-listed'
   const okOwner = d.isLegalOwner !== 'no'
   return okType && okListed && okOwner
@@ -123,7 +125,7 @@ function leadQuality(score: number): 'premium' | 'standard' | 'low' {
   return 'low'
 }
 function disqualifyReasonFor(d: SurveyData): string {
-  if (d.propertyType !== 'single-family' && d.propertyType !== 'multi-family') return 'property_type'
+  if (!QUALIFIED_PROPERTY_TYPES.includes(d.propertyType)) return 'property_type'
   if (d.listedOnMarket !== 'not-listed') return 'listed'
   if (d.isLegalOwner === 'no') return 'not_owner'
   if (d.condition === 'excellent') return 'excellent_condition'
@@ -206,11 +208,10 @@ type Stage2Field = "propertyType" | "ownershipLength" | "timeline" | "condition"
 // The original v2 question order, minus the questions that moved to Stage 1.
 const STAGE2_FIELDS: Stage2Field[] = ["propertyType", "ownershipLength", "timeline", "condition", "reason"]
 
-// Stage-2 hard disqualifiers (unchanged from the one-step v2 form).
-// Condo is a DQ here (townhouse still qualifies).
-const DQ_PROPERTY_TYPES = ["condo", "mobile-home", "land", "other"]
-// Short ownership (under ~5 years: "1-3-years" = <3yr, "3-5-years" = 3-5yr)
-const DQ_OWNERSHIP_LENGTHS = ["1-3-years", "3-5-years"]
+// Stage-2 hard disqualifiers. Condo and townhouse qualify.
+const DQ_PROPERTY_TYPES = ["mobile-home", "land", "other"]
+// No ownership-length DQ: every option qualifies.
+const DQ_OWNERSHIP_LENGTHS: string[] = []
 // Listing hard-DQ (Elevate v2.51): only "No, never" (not-listed) passes; active,
 // expired/cancelled, and "not sure" all block. Stage 1.
 const DQ_LISTED = ["listed-active", "not-sure", "listed-expired"]
@@ -654,7 +655,7 @@ export function SurveyCard({ initialAddress, initialDetails, brand, allowedCount
       propertyType: {
         title: "We're Unable to Assist",
         message: "Unfortunately, we're not able to make an offer on this type of property at this time.",
-        detail: "We primarily purchase single-family homes, multi-family properties, and townhouses. If you have a different property you'd like to sell, feel free to reach out.",
+        detail: "We primarily purchase single-family homes, multi-family properties, condos, and townhouses. If you have a different property you'd like to sell, feel free to reach out.",
       },
       excellentCondition: {
         title: "This May Not Be the Right Fit",
