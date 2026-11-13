@@ -32,6 +32,8 @@ const PROPERTY_TYPE_OPTIONS = [
   { id: "multi-family", label: "Multi-Family (Duplex, Triplex, etc.)" },
   { id: "condo", label: "Condo" },
   { id: "townhouse", label: "Townhouse" },
+  { id: "mixed-use", label: "Mixed Use (Residential + Commercial)" },
+  { id: "commercial", label: "Commercial" },
   { id: "mobile-home", label: "Mobile / Manufactured Home" },
   { id: "land", label: "Vacant Land / Lot" },
   { id: "other", label: "Other" },
@@ -111,8 +113,8 @@ function calculateLeadScore(d: SurveyData): number {
   const c = SCORE_CONDITION[d.condition] ?? 0
   return Math.min(10, t + o + r + c)
 }
-// Property types that qualify (form + Meta "Lead"): condo and townhouse included.
-const QUALIFIED_PROPERTY_TYPES = ['single-family', 'multi-family', 'condo', 'townhouse']
+// Property types that qualify (form + Meta "Lead"): condo, townhouse, mixed use and commercial included.
+const QUALIFIED_PROPERTY_TYPES = ['single-family', 'multi-family', 'condo', 'townhouse', 'mixed-use', 'commercial']
 function isQualifiedForMeta(d: SurveyData): boolean {
   const okType = QUALIFIED_PROPERTY_TYPES.includes(d.propertyType)
   const okListed = d.listedOnMarket === 'not-listed'
@@ -208,7 +210,7 @@ type Stage2Field = "propertyType" | "ownershipLength" | "timeline" | "condition"
 // The original v2 question order, minus the questions that moved to Stage 1.
 const STAGE2_FIELDS: Stage2Field[] = ["propertyType", "ownershipLength", "timeline", "condition", "reason"]
 
-// Stage-2 hard disqualifiers. Condo and townhouse qualify.
+// Stage-2 hard disqualifiers. Condo, townhouse, mixed use and commercial qualify.
 const DQ_PROPERTY_TYPES = ["mobile-home", "land", "other"]
 // No ownership-length DQ: every option qualifies.
 const DQ_OWNERSHIP_LENGTHS: string[] = []
@@ -655,7 +657,7 @@ export function SurveyCard({ initialAddress, initialDetails, brand, allowedCount
       propertyType: {
         title: "We're Unable to Assist",
         message: "Unfortunately, we're not able to make an offer on this type of property at this time.",
-        detail: "We primarily purchase single-family homes, multi-family properties, condos, and townhouses. If you have a different property you'd like to sell, feel free to reach out.",
+        detail: "We primarily purchase single-family homes, multi-family properties, condos, townhouses, mixed-use and commercial properties. If you have a different property you'd like to sell, feel free to reach out.",
       },
       excellentCondition: {
         title: "This May Not Be the Right Fit",
