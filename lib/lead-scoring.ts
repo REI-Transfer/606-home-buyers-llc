@@ -50,6 +50,7 @@ const TIMELINE_WEIGHTS: Record<string, number> = {
   "6-months": 10,
   "6-plus":    5,
 }
+const TIMELINE_NEUTRAL = 15
 
 const YEARS_WEIGHTS: Record<string, number> = {
   "20+":   15,
@@ -86,7 +87,7 @@ export function scoreLead(input: ScoreInput): ScoreResult {
     property:   PROPERTY_WEIGHTS[input.propertyType]    ?? 0,
     who:        WHO_WEIGHTS[input.whoAreYou]            ?? 0,
     listed:     LISTED_WEIGHTS[input.listedOnMarket]    ?? 0,
-    timeline:   TIMELINE_WEIGHTS[input.timeline]        ?? 0,
+    timeline:   input.timeline ? (TIMELINE_WEIGHTS[input.timeline] ?? 0) : TIMELINE_NEUTRAL,
     years:      YEARS_WEIGHTS[input.yearsOwned]         ?? 0,
     reason:     REASON_WEIGHTS[input.reason]            ?? 0,
     condition:  CONDITION_WEIGHTS[input.condition]      ?? 0,

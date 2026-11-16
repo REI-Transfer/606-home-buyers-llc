@@ -99,6 +99,7 @@ const OWNERSHIP_LENGTH_OPTIONS = [
 const SCORE_TIMELINE: Record<string, number> = {
   'asap': 3, '2-weeks': 2, '30-days': 1, '60-days': 0, 'flexible': 0,
 }
+const TIMELINE_NEUTRAL = 1
 const SCORE_REASON: Record<string, number> = {
   'foreclosure': 3, 'behind-payments': 3,
   'inherited': 2, 'repairs': 2,
@@ -112,7 +113,7 @@ const SCORE_CONDITION: Record<string, number> = {
   'fair': 0, 'good': 0, 'excellent': 0,
 }
 function calculateLeadScore(d: SurveyData): number {
-  const t = SCORE_TIMELINE[d.timeline] ?? 0
+  const t = d.timeline ? (SCORE_TIMELINE[d.timeline] ?? 0) : TIMELINE_NEUTRAL
   const r = SCORE_REASON[d.reason] ?? 0
   const c = SCORE_CONDITION[d.condition] ?? 0
   return Math.min(10, t + r + c)
@@ -224,7 +225,7 @@ function validateName(name: string): { valid: boolean; msg: string } {
 const STAGE1_STEPS = 4 // 1=address, 2=owner, 3=listed, 4=contact
 type Stage2Field = "propertyType" | "timeline" | "condition" | "reason" | "ownershipLength"
 // The template's original question order, minus the questions that moved to Stage 1.
-const STAGE2_FIELDS: Stage2Field[] = ["propertyType", "timeline", "condition", "reason", "ownershipLength"]
+const STAGE2_FIELDS: Stage2Field[] = ["propertyType", "condition", "reason", "ownershipLength"]
 
 // Cap how long the user waits on the early POST. The request itself is not
 // aborted (the page does not navigate, so it keeps running in the background);

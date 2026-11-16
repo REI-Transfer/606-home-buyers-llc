@@ -255,7 +255,7 @@ function StepHeader({ children }: { children: React.ReactNode }) {
 
 export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPropertyTypes, allowedStates = [], allowedCounties = [], motivationV2 = false }: Props) {
   const [step, setStep] = useState(1)
-  const TOTAL_STEPS = 9
+  const TOTAL_STEPS = 8
   const [outsideAreaError, setOutsideAreaError] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState("")
@@ -492,17 +492,6 @@ export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPro
 
       {step === 4 && (
         <div>
-          <StepHeader>How soon would you like to sell?</StepHeader>
-          <div className="space-y-3">
-            {TIMELINE_OPTIONS.map(c => (
-              <ChoiceButton key={c.id} accentColor={accentColor} choice={c} selected={form.timeline === c.id} onClick={() => pickAndAdvance("timeline", c.id)} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {step === 5 && (
-        <div>
           <StepHeader>How long have you owned the property?</StepHeader>
           <div className="space-y-3">
             {YEARS_OWNED_OPTIONS.map(c => (
@@ -512,7 +501,7 @@ export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPro
         </div>
       )}
 
-      {step === 6 && (
+      {step === 5 && (
         <div>
           <StepHeader>What&apos;s the main reason for selling?</StepHeader>
           <div className="space-y-3">
@@ -523,7 +512,7 @@ export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPro
         </div>
       )}
 
-      {step === 7 && (
+      {step === 6 && (
         <div>
           <StepHeader>How would you describe the condition?</StepHeader>
           <div className="space-y-3">
@@ -569,7 +558,7 @@ export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPro
         </div>
       )}
 
-      {step === 8 && (
+      {step === 7 && (
         <div>
           <StepHeader>What&apos;s the property address?</StepHeader>
           <div className="space-y-3">
@@ -602,7 +591,7 @@ export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPro
         </div>
       )}
 
-      {step === 9 && (
+      {step === 8 && (
         <div>
           <StepHeader>Who should we send the offer to?</StepHeader>
           <div className="space-y-4">
@@ -703,7 +692,7 @@ export function ZeroDistractionForm({ accentColor, serviceAreas, disqualifiedPro
         </div>
       )}
 
-      {step > 1 && step < 9 && (
+      {step > 1 && step < 8 && (
         <button
           type="button"
           onClick={() => setStep(s => Math.max(s - 1, 1))}
