@@ -82,6 +82,14 @@ const config = {
   // worth" hard-disqualifier. Existing rei-survey-template@main projects without
   // this env → falsy → byte-identical legacy reason list, no disqualifier.
   motivationV2:    process.env.MOTIVATION_V2 === "true",
+  // Demo site switch (template): never set on a client site.
+  showroom:        process.env.SHOWROOM === "1",
+  // Screen-out button: "Text Us" unless the number can't take texts (PHONE_ACCEPTS_TEXT=0 → "Call Us").
+  phoneAcceptsText: !["0", "false", "off"].includes((process.env.PHONE_ACCEPTS_TEXT ?? "").trim().toLowerCase()),
+  // Property-record form (components/v2/record-survey-card.tsx): NEXT_PUBLIC_RECORD_FORM=one-step
+  // or two-step turns it on in that version. Unset = this site's current form, untouched.
+  recordForm:      ["one-step", "two-step"].includes((process.env.NEXT_PUBLIC_RECORD_FORM ?? "").trim().toLowerCase()) || process.env.SHOWROOM === "1",
+  recordMode:      ((process.env.NEXT_PUBLIC_RECORD_FORM ?? "").trim().toLowerCase() === "two-step" ? "two-step" : "one-step") as "one-step" | "two-step",
 } as const
 
 export default config

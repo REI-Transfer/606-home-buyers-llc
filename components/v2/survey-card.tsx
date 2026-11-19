@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { AddressAutocomplete, type AddressAutocompleteHandle, type AddressDetails } from "@/components/survey/address-autocomplete"
 import { isWithinServiceArea } from "@/lib/service-area"
 import { marketPhrase, type Brand } from "@/lib/brand"
+import { RecordSurveyCard } from "@/components/v2/record-survey-card"
 
 interface SurveyData {
   address: string
@@ -226,7 +227,7 @@ const EARLY_POST_MAX_WAIT_MS = 4000
 
 type FbqFn = (...args: unknown[]) => void
 
-interface SurveyCardProps {
+export interface SurveyCardProps {
   allowedCounties?: string[];
   allowedStates?: string[];
   // When set (hero / header already captured the address), Stage 1 starts at
@@ -240,7 +241,7 @@ interface SurveyCardProps {
   brand: Brand
 }
 
-export function SurveyCard({ initialAddress, initialDetails, brand, allowedCounties = [], allowedStates = [] }: SurveyCardProps) {
+function CurrentSurveyCard({ initialAddress, initialDetails, brand, allowedCounties = [], allowedStates = [] }: SurveyCardProps) {
   // ---- Stage state ----
   const [stage, setStage] = useState<1 | 2>(1)
   const [stage1Step, setStage1Step] = useState(initialAddress ? 2 : 1)
@@ -979,4 +980,11 @@ export function SurveyCard({ initialAddress, initialDetails, brand, allowedCount
       </div>
     </div>
   )
+}
+
+// NEXT_PUBLIC_RECORD_FORM=one-step|two-step: the property-record form (record-survey-card.tsx).
+// Unset = this site's current form above, untouched (unset + redeploy = rollback).
+export function SurveyCard(props: SurveyCardProps) {
+  if (props.brand.recordForm) return <RecordSurveyCard {...props} mode={props.brand.recordMode} />
+  return <CurrentSurveyCard {...props} />
 }

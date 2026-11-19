@@ -31,6 +31,13 @@ export interface Brand {
   stat2Label: string
   stat3Value: string
   stat3Label: string
+  /** Demo site: the form sends nothing anywhere. */
+  showroom: boolean
+  /** Screen-out button texts the client (false = calls). PHONE_ACCEPTS_TEXT. */
+  phoneAcceptsText: boolean
+  /** Property-record form switch and version (NEXT_PUBLIC_RECORD_FORM). */
+  recordForm: boolean
+  recordMode: "one-step" | "two-step"
 }
 
 /** Server-only. Build the plain, serializable brand object from env config. */
@@ -58,6 +65,10 @@ export function buildBrand(): Brand {
     stat2Label: config.stat2Label,
     stat3Value: config.stat3Value,
     stat3Label: config.stat3Label,
+    showroom: config.showroom,
+    phoneAcceptsText: config.phoneAcceptsText,
+    recordForm: config.recordForm,
+    recordMode: config.recordMode,
   }
 }
 
