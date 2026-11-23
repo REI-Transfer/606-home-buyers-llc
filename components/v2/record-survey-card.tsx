@@ -27,6 +27,7 @@ import { useState, useRef, useEffect, useId, type ReactNode } from "react"
 import { Home, ArrowRight, ArrowLeft, ArrowDown, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { captureTrackingData, getIPAddress, readGfSid } from "@/lib/tracking"
+import { trackFunnel, FORM_MODE, type FunnelStep } from "@/lib/form-funnel"
 import { Input } from "@/components/ui/input"
 import { AddressAutocomplete, type AddressDetails } from "@/components/survey/address-autocomplete"
 import { isWithinServiceArea } from "@/lib/service-area"
@@ -50,6 +51,10 @@ import {
   ScreenOutScreen,
   SubmittedScreen,
 } from "@/components/v2/survey-card-shared"
+
+// Funnel dashboard: a page view, once per visit, as soon as the page with this form
+// loads (on hero themes the card itself only mounts after the address).
+if (typeof window !== "undefined") trackFunnel("page_view", FORM_MODE)
 
 const STAGE1_STEPS = 3 // 1=address, 2=condition, 3=contact (two-step only)
 type Stage2Field = "isLegalOwner" | "listedOnMarket" | "propertyType" | "landOwned" | "ownershipLength" | "reason" | "priority" | "contact"
@@ -747,6 +752,17 @@ export function RecordSurveyCard({ initialAddress, brand, mode = "two-step" }: S
       Back
     </Button>
   )
+
+  // Funnel dashboard (lib/form-funnel.ts): one ping the first time each screen shows.
+  const funnelField = stage2Fields[Math.min(stage2Step, totalStage2Steps) - 1]
+  useEffect(() => {
+    const mode = oneStep ? "one-step" : "two-step"
+    if (isDisqualified) return trackFunnel("screened_out", mode, disqualifyReason)
+    if (isSubmitted) return trackFunnel("submitted", mode)
+    if (checkingMode) return trackFunnel(checkingMode === "early" ? "record_check" : "final_check", mode)
+    if (stage === 1) return trackFunnel(stage1Step === 1 ? "address" : stage1Step === 2 ? "condition" : "contact", mode)
+    if (funnelField) trackFunnel(funnelField as FunnelStep, mode)
+  }, [isDisqualified, isSubmitted, checkingMode, stage, stage1Step, funnelField, disqualifyReason, oneStep])
 
   const inputClass = (field: string) =>
     `h-14 text-lg rounded-xl border-[#E2E8F0] bg-white text-[#0F1D2F] placeholder:text-[#94A3B8] focus:border-[#1B2A4A] focus:ring-[#1B2A4A]/20 ${validationErrors[field] ? "border-red-500" : ""}`
