@@ -328,7 +328,9 @@ export const recordUsable = (x: LookupResult) => x.matched && x.equity_pct != nu
 
 // Old questions to ask the seller because the record could not answer them.
 // Listing status always comes from the record (no active listing = "not-listed").
-export const ASKABLE = ["isLegalOwner", "propertyType", "ownershipLength"] as const
+// The legal owner question is never asked (William 2026-11-22); isLegalOwner is still
+// sent, filled from the record's owner name match, blank otherwise.
+export const ASKABLE = ["propertyType", "ownershipLength"] as const
 export type AskableField = typeof ASKABLE[number]
 export function questionsToAsk(x: LookupResult): AskableField[] {
   if (!recordUsable(x)) return [...ASKABLE]

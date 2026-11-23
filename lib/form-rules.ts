@@ -22,7 +22,7 @@
 //                                        "condition:excellent" from the screen-outs).
 //   MIN_EQUITY_PCT (server only)         lib/dealmachine.ts.
 //
-// Fields: isLegalOwner, listedOnMarket, ownershipLength, condition, reason, landOwned.
+// Fields: listedOnMarket, ownershipLength, condition, reason, landOwned.
 // The years-owned rule applies only when the seller answers it with no usable property
 // record: with a record, years owned never screens out (William 2026-11-17).
 
@@ -101,23 +101,24 @@ const EXTRA_OPTIONS: Partial<Record<AnswerField, Option[]>> = {
 // ── Rules ────────────────────────────────────────────────────────────────
 const DEFAULT_DQ: Record<Profile, string[]> = {
   themes: [
-    "isLegalOwner:no",
     "listedOnMarket:listed-active", "listedOnMarket:listed-expired", "listedOnMarket:not-sure",
     "ownershipLength:1-3-years", "ownershipLength:3-5-years",
     "condition:excellent",
     "landOwned:no",
   ],
   v1: [
-    "isLegalOwner:no",
     "listedOnMarket:listed-realtor", "listedOnMarket:listed-fsbo",
     "condition:excellent",
     "landOwned:no",
   ],
 }
 
+// The legal owner question is gone (William 2026-11-22): an owner answer never screens
+// out, even if this client's settings still list one.
 const parsePairs = (raw: string): string[] =>
   raw.split(",").map((s) => s.trim().toLowerCase()).filter((s) => /^[a-z]+:[a-z0-9-]+$/i.test(s))
     .map((s) => { const [f, v] = s.split(":"); return `${FIELD_KEY[f] ?? f}:${v}` })
+    .filter((p) => !p.startsWith("isLegalOwner:"))
 // env keys are lower-cased; map back to the payload field names
 const FIELD_KEY: Record<string, AnswerField> = {
   propertytype: "propertyType", islegalowner: "isLegalOwner", listedonmarket: "listedOnMarket",
@@ -200,7 +201,7 @@ const RULE_LABEL: Record<AnswerField, string> = {
   ownershipLength: "short_ownership", condition: "excellent_condition", reason: "no_reason",
   landOwned: "land_not_confirmed",
 }
-const CHECKED: AnswerField[] = ["isLegalOwner", "listedOnMarket", "propertyType", "landOwned", "ownershipLength", "reason"]
+const CHECKED: AnswerField[] = ["listedOnMarket", "propertyType", "landOwned", "ownershipLength", "reason"]
 export function sellerAnswerRule(d: Record<string, unknown>, recordUsable: boolean): { rule: Rule; label: string } {
   let low = ""
   for (const f of CHECKED) {

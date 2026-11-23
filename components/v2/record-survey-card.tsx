@@ -466,10 +466,9 @@ export function RecordSurveyCard({ initialAddress, brand, mode = "two-step" }: S
     // One-step: contact details come last.
     const tail: Stage2Field[] = oneStep ? ["reason", "priority", "contact"] : ["reason", "priority"]
     if (!dmMatched) {
-      return ["isLegalOwner", "listedOnMarket", "propertyType", ...(mobile ? ["landOwned" as const] : []), "ownershipLength", ...tail]
+      return ["listedOnMarket", "propertyType", ...(mobile ? ["landOwned" as const] : []), "ownershipLength", ...tail]
     }
     return [
-      ...(dmAsk.includes("isLegalOwner") ? ["isLegalOwner" as const] : []),
       ...(dmAsk.includes("propertyType") ? ["propertyType" as const] : []),
       ...(mobile ? ["landOwned" as const] : []),
       ...(dmAsk.includes("ownershipLength") ? ["ownershipLength" as const] : []),
