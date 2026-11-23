@@ -500,6 +500,7 @@ export function RecordSurveyCard({ initialAddress, brand, mode = "two-step" }: S
       // pixel fire can suppress excellent / move-in-ready leads.
       sessionStorage.setItem('lead_condition', finalData.condition)
     } catch {}
+    trackFunnel("submitted", oneStep ? "one-step" : "two-step")
     window.location.href = '/thank-you'
   }
 
@@ -758,7 +759,9 @@ export function RecordSurveyCard({ initialAddress, brand, mode = "two-step" }: S
   useEffect(() => {
     const mode = oneStep ? "one-step" : "two-step"
     if (isDisqualified) return trackFunnel("screened_out", mode, disqualifyReason)
-    if (isSubmitted) return trackFunnel("submitted", mode)
+    // isSubmitted is only the bot path (honeypot / too fast): never counted. Real
+    // submits are counted in goToThankYou, right before the redirect.
+    if (isSubmitted) return
     if (checkingMode) return trackFunnel(checkingMode === "early" ? "record_check" : "final_check", mode)
     if (stage === 1) return trackFunnel(stage1Step === 1 ? "address" : stage1Step === 2 ? "condition" : "contact", mode)
     if (funnelField) trackFunnel(funnelField as FunnelStep, mode)
