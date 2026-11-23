@@ -307,7 +307,8 @@ export function RecordSurveyCard({ initialAddress, brand, mode = "two-step" }: S
 
     // Screened out by the record (listed, property type, equity, Excellent with no lien
     // or motivation): shown here, before the contact step. No answer + Excellent = out, as before.
-    const excellentNoAnswer = condition === "excellent" && excellent === "dq" && !res
+    // An errored check ({success:false}, no verdict) is no answer too.
+    const excellentNoAnswer = condition === "excellent" && excellent === "dq" && !res?.verdict
     if (res?.verdict === "dq" || excellentNoAnswer) {
       setCheckingMode(null)
       setIsSubmitting(false)
@@ -414,7 +415,8 @@ export function RecordSurveyCard({ initialAddress, brand, mode = "two-step" }: S
         .then((r) => r.json() as Promise<{ matched?: boolean; is_mobile?: boolean; ask?: string[]; screened_out?: boolean; excellent_bypass?: boolean; demo?: DemoInfo | null }>)
         .catch(() => null)
       const res = await Promise.race([post, new Promise<null>((resolve) => setTimeout(() => resolve(null), EARLY_POST_MAX_WAIT_MS))])
-      answered = !!res
+      // An errored early post ({success:false}) is no answer: Excellent stays screened out.
+      answered = !!res && (res as { success?: boolean }).success !== false
       matched = res?.matched === true
       isMobile = res?.is_mobile === true
       ask = Array.isArray(res?.ask) ? res.ask : []
