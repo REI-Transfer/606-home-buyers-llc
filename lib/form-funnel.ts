@@ -7,9 +7,10 @@ const ENABLED = process.env.NEXT_PUBLIC_FUNNEL_TRACKING !== "false"
 const SID_KEY = "reit_ff_sid"
 const FIRED_KEY = "reit_ff_fired"
 
-// Standard step numbers (keep in sync with the dashboard). Steps only go forward, so
-// the highest step a visit reached is where it stopped. Questions are 11-18 in the
-// order the form can ask them; a client's own extra question is 19; 90+ are endings.
+// Standard step numbers (keep in sync with the dashboard). A step's number names the
+// screen, not its place: listed (11) is asked right after the address since 2026-11-23.
+// Where a visit stopped = its last screen in time. Questions are 11-18; a client's own
+// extra question is 19; 90+ are endings.
 export const FUNNEL_STEPS = {
   page_view: 1, address: 2, condition: 3, contact: 4, record_check: 5,
   listedOnMarket: 11, propertyType: 12, landOwned: 13, ownershipLength: 14,

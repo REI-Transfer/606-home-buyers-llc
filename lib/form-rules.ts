@@ -50,11 +50,12 @@ const THEMES_OPTIONS: Record<"propertyType" | "isLegalOwner" | "listedOnMarket" 
     { id: "yes-family", label: "Yes, I am a family member with the legal right to sell" },
     { id: "no", label: "No, I am not" },
   ],
+  // Same 3 choices on every client (William 2026-11-23). Here "for sale by owner" goes
+  // out as listed-active, the value this client's CRM already maps (listedAnswerId).
   listedOnMarket: [
-    { id: "not-listed", label: "No, never" },
-    { id: "listed-active", label: "Yes, active now" },
-    { id: "listed-expired", label: "Yes, but expired or cancelled" },
-    { id: "not-sure", label: "Not sure" },
+    { id: "listed-active", label: "Yes, listed with a realtor" },
+    { id: "listed-fsbo", label: "Yes, listed for sale by owner" },
+    { id: "not-listed", label: "No, it's not listed" },
   ],
   ownershipLength: [
     { id: "1-3-years", label: "Within the last 3 years" },
@@ -76,9 +77,9 @@ const V1_OPTIONS: typeof THEMES_OPTIONS = {
   ],
   isLegalOwner: THEMES_OPTIONS.isLegalOwner,
   listedOnMarket: [
-    { id: "not-listed", label: "No, it is not listed" },
     { id: "listed-realtor", label: "Yes, listed with a realtor" },
     { id: "listed-fsbo", label: "Yes, listed for sale by owner" },
+    { id: "not-listed", label: "No, it's not listed" },
   ],
   ownershipLength: [
     { id: "less-than-3", label: "Less than 3 years" },
@@ -181,6 +182,10 @@ export function propertyTypeId(kind: string): string {
   if (answerProfile() === "v1" && (kind === "condo" || kind === "townhouse")) return "condo-townhouse"
   return ["single-family", "multi-family", "condo", "townhouse", "mobile-home", "land"].includes(kind) ? kind : ""
 }
+// The listed choice the seller tapped → the value this client's form always sent.
+// Themes forms never had a "for sale by owner" value: it goes out as listed-active.
+export const listedAnswerId = (choice: string): string =>
+  answerProfile() === "themes" && choice === "listed-fsbo" ? "listed-active" : choice
 export const listedId = (listedNow: boolean): string =>
   listedNow ? (answerProfile() === "v1" ? "listed-realtor" : "listed-active") : "not-listed"
 export function ownershipId(years: number | null, inherited: boolean): string {
